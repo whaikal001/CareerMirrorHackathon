@@ -22,7 +22,7 @@ const SectionLabel = ({ children }) => (
   <div className="ct-small-title" style={{ color: "var(--amber)", marginBottom: 10 }}>{children}</div>
 );
 
-export default function LandingPage({ go, jobMatches, companyFits }) {
+export default function LandingPage({ go, jobMatches, companyFits, openCompany }) {
   const featured = COMPANIES.map((c) => ({ ...c, fit: companyFits?.[c.id] ?? c.compatibility })).sort((a, b) => b.fit - a.fit).slice(0, 4);
   const matched = JOBS.map((j) => ({ ...j, fit: jobMatches?.[j.id] ?? j.match })).sort((a, b) => b.fit - a.fit).slice(0, 3);
 
@@ -99,7 +99,7 @@ export default function LandingPage({ go, jobMatches, companyFits }) {
         </div>
         <div className="ct-grid4" style={{ marginTop: 22 }}>
           {featured.map((c, i) => (
-            <div key={c.id} className="ct-card ct-path clickable" style={{ textAlign: "center", position: "relative", paddingTop: 34 }} onClick={() => go("companies")}>
+            <div key={c.id} className="ct-card ct-path clickable" style={{ textAlign: "center", position: "relative", paddingTop: 34 }} onClick={() => openCompany(c.id)}>
               {i < 2 && <span className="ct-chip sel" style={{ position: "absolute", top: 12, left: 12, fontSize: 11.5, padding: "4px 10px" }}>✦ Picked for you</span>}
               <div className="ct-serif" style={{ width: 76, height: 76, margin: "0 auto", borderRadius: 16, background: "var(--surf2)", border: "1px solid var(--line)", display: "grid", placeItems: "center", fontWeight: 700, fontSize: 14.5, padding: 6 }}>{c.name.split(" ")[0]}</div>
               <div className="ct-serif" style={{ fontWeight: 700, fontSize: 18, marginTop: 12 }}>{c.name}</div>

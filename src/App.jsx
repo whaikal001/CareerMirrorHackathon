@@ -36,6 +36,7 @@ import RehearsalPage from "./pages/RehearsalPage";
 import WhatIfPage from "./pages/WhatIfPage";
 import EmployerPage from "./pages/EmployerPage";
 import PortfolioPage from "./pages/PortfolioPage";
+import CompanyDetailPage from "./pages/CompanyDetailPage";
 
 /* ============================ APP ============================ */
 export default function App() {
@@ -62,6 +63,7 @@ export default function App() {
   const [whatIf, setWhatIf] = useState(() => saved.whatIf || null);
   const [twinData, setTwinData] = useState(() => saved.twinData || null);
   const [coachTyping, setCoachTyping] = useState(false);
+  const [companyId, setCompanyId] = useState(null);
 
   const dna = useMemo(() => computeDNA(profile, interests, twinData), [profile, interests, twinData]);
   const rankedPaths = useMemo(() => rankPaths(PATHS, dna), [dna]);
@@ -235,6 +237,11 @@ export default function App() {
     go("rehearsal");
   };
 
+  const openCompany = (id) => {
+    setCompanyId(id);
+    go("company");
+  };
+
   return (
     <div className={`ct-root ${theme === "light" ? "light" : ""}`}>
       <style>{STYLES}</style>
@@ -269,7 +276,7 @@ export default function App() {
           <ApplyModal applyModal={applyModal} onClose={() => setApplyModal(null)} go={go} />
         )}
 
-        {screen === "landing" && <LandingPage go={go} jobMatches={jobMatches} companyFits={companyFits} />}
+        {screen === "landing" && <LandingPage go={go} jobMatches={jobMatches} companyFits={companyFits} openCompany={openCompany} />}
 
         {screen === "profile" && (
           <ProfilePage
@@ -304,7 +311,18 @@ export default function App() {
           <RehearsalPage job={rehearsalJob} profile={profile} interests={interests} setRehearsalReport={setRehearsalReport} go={go} />
         )}
 
-        {screen === "companies" && <CompaniesPage applyForJob={applyForJob} go={go} companyFits={companyFits} />}
+        {screen === "companies" && <CompaniesPage applyForJob={applyForJob} go={go} companyFits={companyFits} openCompany={openCompany} />}
+
+        {screen === "company" && (
+          <CompanyDetailPage
+            company={COMPANIES.find((c) => c.id === companyId)}
+            fit={companyFits[companyId]}
+            jobMatches={jobMatches}
+            applyForJob={applyForJob}
+            startRehearsal={startRehearsal}
+            go={go}
+          />
+        )}
 
         {screen === "coach" && <CoachPage chat={chat} chatRef={chatRef} ask={ask} go={go} typing={coachTyping} />}
 

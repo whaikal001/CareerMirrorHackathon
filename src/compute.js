@@ -181,6 +181,22 @@ export const computePlanB = (picked, allPaths) => {
   };
 };
 
+/* ---- Auto professional summary for the living-portfolio preview ---- */
+export const makeProfileSummary = (profile = {}, interests = [], resumeSkills = []) => {
+  const top = resumeSkills.slice(0, 3).map((s) => s.name);
+  const hasContent = top.length || profile.bio || profile.expCompany || profile.field;
+  if (!hasContent) return null;
+  if (!top.length && profile.bio) return profile.bio;
+  const first = (profile.name || "").trim().split(" ")[0];
+  const who = `${profile.field || "Early-career"} ${(profile.userType || "talent").toLowerCase()}`;
+  const parts = [
+    `${first || "This candidate"} is a ${who}${profile.institution ? ` from ${profile.institution}` : ""}${top.length ? ` with hands-on ${top.join(", ")}` : ""}.`,
+  ];
+  if (profile.expCompany) parts.push(`Previously ${profile.expTitle || "worked"} at ${profile.expCompany}.`);
+  if (interests.length) parts.push(`Drawn to ${interests.slice(0, 3).join(", ")}.`);
+  return parts.join(" ");
+};
+
 /* ---- Portfolio strength (0-100) from everything the app knows ---- */
 export const computePortfolioScore = ({ profile, interests, resume, twinData, rehearsalReport, applications } = {}) => {
   let s = 20;

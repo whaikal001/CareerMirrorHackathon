@@ -14,6 +14,7 @@ export const SCREEN_STEP = {
   jobs: 4,
   rehearsal: 4,
   companies: 5,
+  company: 5,
   coach: 6,
   dashboard: 7,
   portfolio: 8,
@@ -36,6 +37,19 @@ export const DEFAULT_PROFILE = {
   country: "Malaysia",
   workStyle: "Remote-first",
   mbti: "INTJ",
+  headline: "",
+  email: "",
+  phone: "",
+  bio: "",
+  institution: "",
+  gradYear: "",
+  expTitle: "",
+  expCompany: "",
+  expFrom: "",
+  expTo: "",
+  expDesc: "",
+  linkedin: "",
+  github: "",
 };
 
 export const DEFAULT_APPLICATIONS = [];
