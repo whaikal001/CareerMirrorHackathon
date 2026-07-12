@@ -22,7 +22,7 @@ export default function ProfileDrawer({
         <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 22 }}>
           <div className="ct-pfp" style={{ width: 54, height: 54, fontSize: 22, cursor: "default" }}>{(profile.name.trim().charAt(0) || "U").toUpperCase()}</div>
           <div>
-            <div style={{ fontFamily: "Bricolage Grotesque", fontWeight: 700, fontSize: 20 }}>{profile.name || "Your name"}</div>
+            <div style={{ fontWeight: 700, fontSize: 20 }}>{profile.name || "Your name"}</div>
             <div className="ct-mono" style={{ fontSize: 12, color: "var(--mint)" }}>{profile.userType} · {profile.field}</div>
           </div>
         </div>

@@ -22,9 +22,9 @@ export default function ScoreRing({ value }) {
         strokeDasharray={c}
         strokeDashoffset={c - (c * draw) / 100}
         transform="rotate(-90 106 106)"
-        style={{ transition: "stroke-dashoffset 1.4s cubic-bezier(.2,.7,.2,1)", filter: "drop-shadow(0 0 8px var(--mint))" }}
+        style={{ transition: "stroke-dashoffset 1.4s cubic-bezier(.2,.7,.2,1)" }}
       />
-      <text x="106" y="100" textAnchor="middle" fontFamily="Bricolage Grotesque" fontWeight="700" fontSize="54" fill="var(--txt)">{value}</text>
+      <text x="106" y="100" textAnchor="middle" fontFamily="Outfit" fontWeight="700" fontSize="54" fill="var(--txt)">{value}</text>
       <text x="106" y="128" textAnchor="middle" fontFamily="JetBrains Mono" fontSize="12.5" fill="var(--faint)" letterSpacing="2">/ 100</text>
     </svg>
   );

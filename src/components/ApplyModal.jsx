@@ -7,7 +7,7 @@ export default function ApplyModal({ applyModal, onClose, go }) {
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <div className="ct-avatar" style={{ animation: "none" }}><CheckCircle2 size={25} /></div>
           <div>
-            <div style={{ fontFamily: "Bricolage Grotesque", fontWeight: 700, fontSize: 25 }}>{applyModal.alreadyApplied ? "Already Applied" : "Application Submitted"}</div>
+            <div style={{ fontWeight: 700, fontSize: 25 }}>{applyModal.alreadyApplied ? "Already Applied" : "Application Submitted"}</div>
             <div style={{ color: "var(--muted)", marginTop: 4 }}>Your profile has been sent successfully.</div>
           </div>
         </div>

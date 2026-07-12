@@ -1,13 +1,14 @@
 import { Cpu, CheckCircle2, Circle } from "lucide-react";
 
-const SCAN_STEPS = [
-  "Analyzing resume and career profile",
-  "Mapping skills to job requirements",
-  "Generating career paths",
-  "Preparing job and company matches",
-];
-
-export default function AnalyzingPage({ scanStep }) {
+export default function AnalyzingPage({ scanStep, extracted }) {
+  const SCAN_STEPS = [
+    "Analyzing resume and career profile",
+    extracted?.length
+      ? `Detected skills: ${extracted.slice(0, 4).map((s) => s.name).join(", ")}`
+      : "Mapping skills to job requirements",
+    "Generating career paths",
+    "Preparing job and company matches",
+  ];
   return (
     <div className="ct-screen" style={{ paddingTop: 90, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
       <Cpu size={90} color="var(--mint)" className="spin" style={{ opacity: .9 }} />

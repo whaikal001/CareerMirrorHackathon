@@ -14,15 +14,10 @@ export default function Header({ screen, step, go, theme, setTheme, profile, onO
         </div>
       </div>
       <div className="ct-right">
-        {screen !== "landing" && (
+        {screen !== "landing" && screen !== "employer" && (
           <div className="ct-steps">
             {STEPS.map((s, i) => (
-              <React.Fragment key={s}>
-                <div className={`ct-step ${i === step ? "on" : ""} ${i < step ? "done" : ""}`} onClick={() => go(STEP_SCREEN[i])}>
-                  <span className="ct-dot" />{s}
-                </div>
-                {i < STEPS.length - 1 && <span className="ct-sep">›</span>}
-              </React.Fragment>
+              <div key={s} className={`ct-step ${i === step ? "on" : ""}`} onClick={() => go(STEP_SCREEN[i])}>{s}</div>
             ))}
           </div>
         )}
