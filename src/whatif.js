@@ -1,10 +1,5 @@
-/* Pure what-if math for the career simulator. Salary values are RM thousands / month.
-   All transforms are deterministic so every curve change is explainable. */
-
 export const DEFAULT_TOGGLES = { masters: false, singapore: false, freelance: false, pivot: false };
 
-/* PATHS lines have 4 anchor points (23/28/35/45); expand to one point per year
-   so age-specific effects (delays, dips, bands) apply cleanly. */
 export const expandLine = (line) => {
   const pts = [];
   for (let i = 0; i < line.length - 1; i++) {
@@ -33,11 +28,9 @@ export const applyWhatIf = (line, toggles) => {
     pts = pts.map((p) => (p.age >= 26 ? { age: p.age, s: p.s * 1.45 } : p));
   }
   if (toggles.pivot) {
-    // -20% dip at 35 while switching, then steeper +8%/yr compounding growth
-    const at35 = pts.find((p) => p.age === 35).s;
+     const at35 = pts.find((p) => p.age === 35).s;
     pts = pts.map((p) => (p.age >= 35 ? { age: p.age, s: at35 * 0.8 * Math.pow(1.08, p.age - 35) } : p));
   }
-  // Freelance volatility band wraps whatever curve the other toggles produced
   return pts.map((p) => {
     const s = Math.round(p.s * 10) / 10;
     const band =

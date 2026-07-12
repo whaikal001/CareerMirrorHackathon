@@ -5,11 +5,17 @@ const clamp = (n, lo = 40, hi = 98) => Math.max(lo, Math.min(hi, Math.round(n)))
 
 /* ---- Resume skill extraction (keyword scan over extracted PDF text) ---- */
 export const SKILL_KEYWORDS = [
+  // Tech
   "Python", "Java", "JavaScript", "TypeScript", "React", "Node.js", "SQL", "HTML", "CSS", "C++", "C#",
   "Golang", "Machine Learning", "Deep Learning", "TensorFlow", "PyTorch", "Data Analysis", "Power BI",
   "Tableau", "Excel", "Docker", "Kubernetes", "AWS", "Azure", "Git", "Linux", "Networking",
   "Cybersecurity", "Figma", "UI/UX", "API Integration", "REST APIs", "Firebase", "MongoDB", "Flutter",
-  "Airflow", "Statistics", "Communication", "Leadership",
+  "Airflow", "Statistics",
+  // Business & marketing
+  "Google Analytics", "SEO", "Content", "Social Media", "Digital Marketing", "Marketing", "Copywriting",
+  "Sales", "Accounting", "Financial Analysis", "Business Analysis", "Project Management", "Supply Chain",
+  // Creative & soft
+  "Canva", "Photoshop", "Illustrator", "Video Editing", "Public Speaking", "Communication", "Leadership",
 ];
 
 const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -73,10 +79,10 @@ export const computeDNA = (profile = {}, interests = [], twinData = null) => {
     const soft = ["Communication", "Leadership", "Excel"];
     const techy = skills.filter((s) => !soft.includes(s.name));
     if (techy.length) v.Technical += Math.min(8, Math.round(techy.reduce((t, s) => t + s.level, 0) / techy.length / 12));
-    if (skills.some((s) => ["Machine Learning", "Data Analysis", "Statistics", "Power BI", "Tableau", "SQL"].includes(s.name))) v.Analytical += 5;
-    if (skills.some((s) => ["Figma", "UI/UX", "CSS"].includes(s.name))) v.Creativity += 5;
-    if (skills.some((s) => s.name === "Leadership")) v.Leadership += 5;
-    if (skills.some((s) => s.name === "Communication")) v.Comms += 5;
+    if (skills.some((s) => ["Machine Learning", "Data Analysis", "Statistics", "Power BI", "Tableau", "SQL", "Google Analytics", "Financial Analysis"].includes(s.name))) v.Analytical += 5;
+    if (skills.some((s) => ["Figma", "UI/UX", "CSS", "Canva", "Photoshop", "Illustrator", "Video Editing", "Content"].includes(s.name))) v.Creativity += 5;
+    if (skills.some((s) => ["Leadership", "Project Management"].includes(s.name))) v.Leadership += 5;
+    if (skills.some((s) => ["Communication", "Public Speaking", "Social Media", "Marketing", "Digital Marketing", "Copywriting", "Sales"].includes(s.name))) v.Comms += 5;
   }
   return ["Technical", "Analytical", "Creativity", "Risk", "Leadership", "Comms"].map((trait) => ({ trait, v: clamp(v[trait]) }));
 };
@@ -97,6 +103,36 @@ export const computeMatch = (path, dna) => {
 
 export const rankPaths = (paths, dna) =>
   paths.map((p) => ({ ...p, match: computeMatch(p, dna) })).sort((a, b) => b.match - a.match);
+
+/* ---- Job & company fit from DNA + resume skills + interests ---- */
+const SECTOR_TRAITS = {
+  Technology: ["Technical", "Creativity"],
+  "Banking & Finance": ["Analytical", "Comms"],
+  Energy: ["Technical", "Analytical"],
+  Telco: ["Technical", "Comms"],
+  FMCG: ["Comms", "Leadership"],
+  Consulting: ["Analytical", "Comms"],
+};
+
+const fitScore = ({ sector, title = "", wanted = [] }, dna, twinData, interests) => {
+  const d = Object.fromEntries(dna.map((x) => [x.trait, x.v]));
+  const traits = SECTOR_TRAITS[sector] || ["Technical", "Analytical"];
+  const traitScore = traits.reduce((t, k) => t + (d[k] || 60), 0) / traits.length;
+  const skills = (twinData?.skills || []).map((s) => s.name.toLowerCase());
+  const hits = wanted.filter((r) => skills.some((s) => s.includes(r.toLowerCase()) || r.toLowerCase().includes(s))).length;
+  const text = `${title} ${sector} ${wanted.join(" ")}`.toLowerCase();
+  const interestHit = (interests || []).some((i) => text.includes(i.toLowerCase())) ? 4 : 0;
+  const base = skills.length
+    ? 0.55 * (wanted.length ? (hits / wanted.length) * 100 : 60) + 0.45 * traitScore
+    : traitScore;
+  return Math.max(48, Math.min(98, Math.round(base * 1.06 + interestHit)));
+};
+
+export const computeJobMatch = (job, dna, twinData, interests = []) =>
+  fitScore({ sector: job.sector, title: job.title, wanted: job.requirements || [] }, dna, twinData, interests);
+
+export const computeCompanyFit = (company, dna, twinData, interests = []) =>
+  fitScore({ sector: company.sector, title: `${company.name} ${company.industry}`, wanted: company.skills || [] }, dna, twinData, interests);
 
 /* ---- Skill gaps: overlay resume-extracted levels onto the baseline ---- */
 export const computeSkillGaps = (baseGaps, twinData) =>

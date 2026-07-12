@@ -2,12 +2,13 @@ import { useState } from "react";
 import { ArrowLeft, Sparkles, Award, CheckCircle2, Briefcase, BadgeCheck, Star, Users } from "lucide-react";
 import { COMPANIES, JOBS, SECTORS, LOCATIONS, JOB_TYPES, jobMatchesType, matchesLocation } from "../data/careerData";
 
-export default function CompaniesPage({ applyForJob, go }) {
+export default function CompaniesPage({ applyForJob, go, companyFits }) {
   const [q, setQ] = useState("");
   const [sector, setSector] = useState("");
   const [loc, setLoc] = useState("");
   const [type, setType] = useState("");
-  const filtered = COMPANIES.filter((c) =>
+  const companies = COMPANIES.map((c) => ({ ...c, compatibility: companyFits?.[c.id] ?? c.compatibility })).sort((a, b) => b.compatibility - a.compatibility);
+  const filtered = companies.filter((c) =>
     (!q || `${c.name} ${c.industry}`.toLowerCase().includes(q.toLowerCase())) &&
     (!sector || c.sector === sector) &&
     matchesLocation(c.location, loc) &&
@@ -24,7 +25,7 @@ export default function CompaniesPage({ applyForJob, go }) {
         <div className="ct-field" style={{ flex: "1 1 160px" }}><label>Location</label><select value={loc} onChange={(e) => setLoc(e.target.value)}><option value="">All locations</option>{LOCATIONS.map((l) => <option key={l} value={l}>{l}</option>)}</select></div>
         <div className="ct-field" style={{ flex: "1 1 160px" }}><label>Hiring type</label><select value={type} onChange={(e) => setType(e.target.value)}><option value="">All types</option>{JOB_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
       </div>
-      <div className="ct-mono" style={{ marginTop: 14, fontSize: 12.5, color: "var(--faint)", letterSpacing: 1.5 }}>{filtered.length} OF {COMPANIES.length} COMPANIES</div>
+      <div className="ct-mono" style={{ marginTop: 14, fontSize: 12.5, color: "var(--faint)", letterSpacing: 1.5 }}>{filtered.length} OF {COMPANIES.length} COMPANIES · SORTED BY YOUR FIT</div>
       {filtered.length ? (
         <div className="ct-paths" style={{ marginTop: 14 }}>{filtered.map((c) => <div className="ct-card ct-path" key={c.id}><Award size={26} color="var(--sky)" /><div style={{ fontWeight: 700, fontSize: 21, marginTop: 14, display: "flex", alignItems: "center", gap: 8 }}>{c.name}{c.verified && <BadgeCheck size={19} color="var(--mint)" style={{ flex: "none" }} />}</div><div style={{ color: "var(--muted)", marginTop: 4 }}>{c.industry} · {c.location}</div>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 10 }}><Star size={15} fill="var(--amber)" color="var(--amber)" /><b style={{ fontSize: 15 }}>{c.rating}</b><span style={{ color: "var(--faint)", fontSize: 13.5 }}>company rating · replies ~{c.rating >= 4.3 ? 1 : 2}d</span></div>

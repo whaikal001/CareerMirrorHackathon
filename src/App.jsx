@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { STYLES } from "./styles";
 import { PATHS, COACH_A, SKILL_GAPS, JOBS } from "./data/careerData";
-import { computeDNA, rankPaths, computeSkillGaps, computePlanB, makeNudge, extractSkills } from "./compute";
+import { computeDNA, rankPaths, computeSkillGaps, computePlanB, makeNudge, extractSkills, computeJobMatch, computeCompanyFit } from "./compute";
+import { COMPANIES } from "./data/careerData";
 import { extractPdfText } from "./pdfText";
 import {
   SCREEN_STEP,
@@ -67,6 +68,14 @@ export default function App() {
   const skillGaps = useMemo(() => computeSkillGaps(SKILL_GAPS, twinData), [twinData]);
   const planB = useMemo(() => computePlanB(picked, PATHS), [picked]);
   const nudge = useMemo(() => makeNudge(skillGaps, applications, JOBS), [skillGaps, applications]);
+  const jobMatches = useMemo(
+    () => Object.fromEntries(JOBS.map((j) => [j.id, computeJobMatch(j, dna, twinData, interests)])),
+    [dna, twinData, interests]
+  );
+  const companyFits = useMemo(
+    () => Object.fromEntries(COMPANIES.map((c) => [c.id, computeCompanyFit(c, dna, twinData, interests)])),
+    [dna, twinData, interests]
+  );
   const [chat, setChat] = useState([{ from: "bot", t: "Hi Haikal 👋 I'm Twin, your AI career coach. Ask me about jobs, resumes, skills, or applications." }]);
   const chatRef = useRef(null);
 
@@ -260,7 +269,7 @@ export default function App() {
           <ApplyModal applyModal={applyModal} onClose={() => setApplyModal(null)} go={go} />
         )}
 
-        {screen === "landing" && <LandingPage go={go} />}
+        {screen === "landing" && <LandingPage go={go} jobMatches={jobMatches} companyFits={companyFits} />}
 
         {screen === "profile" && (
           <ProfilePage
@@ -289,13 +298,13 @@ export default function App() {
 
         {screen === "roadmap" && <RoadmapPage picked={picked} go={go} />}
 
-        {screen === "jobs" && <JobsPage go={go} startRehearsal={startRehearsal} />}
+        {screen === "jobs" && <JobsPage go={go} startRehearsal={startRehearsal} jobMatches={jobMatches} />}
 
         {screen === "rehearsal" && (
           <RehearsalPage job={rehearsalJob} profile={profile} interests={interests} setRehearsalReport={setRehearsalReport} go={go} />
         )}
 
-        {screen === "companies" && <CompaniesPage applyForJob={applyForJob} go={go} />}
+        {screen === "companies" && <CompaniesPage applyForJob={applyForJob} go={go} companyFits={companyFits} />}
 
         {screen === "coach" && <CoachPage chat={chat} chatRef={chatRef} ask={ask} go={go} typing={coachTyping} />}
 
